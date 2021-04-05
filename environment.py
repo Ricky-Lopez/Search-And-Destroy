@@ -4,6 +4,7 @@ import random
 import math
 import time
 import copy
+import basicAgentOne
 from random import randint
 
 ##data - class to be held in each cell. 
@@ -76,13 +77,13 @@ def print_real_landscape(field,dim): #prints out the landscape BY THE PROPER COO
             print(rows, end="   ")
         rows = rows + 1
         for j in range(dim):
-            if(field[j][i].isTarget) : #Target is here
+            if(field[i][j].isTarget) : #Target is here
                 print("T" , end="    ")
-            elif (field[j][i].probability == .1) : #flat terrain
+            elif (field[i][j].probability == .1) : #flat terrain
                 print("-" , end="    ") 
-            elif (field[j][i].probability == .3) : #hilly terrain
+            elif (field[i][j].probability == .3) : #hilly terrain
                 print("~" , end="    ") 
-            elif (field[j][i].probability == .7) : #forested terrain
+            elif (field[i][j].probability == .7) : #forested terrain
                 print("^" , end="    ") 
             else:                                  #cave terrain
                 print("}" , end="    ") 
@@ -114,6 +115,7 @@ if __name__ == '__main__' :
     if(whoPlays == 'y' or whoPlays == 'yes'):
         whoPlays = True
     elif(whoPlays == 'n' or whoPlays == 'no'):
+        print( basicAgentOne.basicAgentOne(landscape, dim))
         whoPlays = False
     else:
         print("I'm sorry, I don't think I understand. I'll just let the Agent play.", end="\n\n")
@@ -122,26 +124,26 @@ if __name__ == '__main__' :
     if(whoPlays) : #User gets to play
         print("\n******** SEARCH AND DESTROY *********\nRULES:\n\n1. Enter the position you would like to query in the format \"x,y\".\n2. To quit, enter \"q\".\n3. Have fun playing!\n\n")
 
-    gameContinue = True
-    turn = 0
-    while(gameContinue) :
-        if(turn > 0):
-            print("Nothing was Found.\n")
-        turn = turn + 1
-        print("TURN " , turn)
-        print
-        user_input = input("Please enter the position you would like to check: ")
-        user_input.lower()
-        if(user_input == "q") :
-            break
-        else:
-            try:
-                gameContinue = search_position(landscape, (int(user_input[0]), int(user_input[2])) )
-                print()
-            except ValueError:
-                print("Invalid format. Please try again.\n")
-
-    if(not(gameContinue)) :
-        print("Congratulations! you have found the Target!")
-
-    #TODO: Hide Target from the user landscape
+        gameContinue = True
+        turn = 0
+        while(gameContinue) :
+            if(turn > 0):
+                print("Nothing was Found.\n")
+            turn = turn + 1
+            print("TURN " , turn)
+            print
+            user_input = input("Please enter the position you would like to check: ")
+            user_input.lower()
+            if(user_input == "q") :
+                break
+            else:
+                try:
+                    gameContinue = search_position(landscape, (int(user_input[0]), int(user_input[2])) )
+                    print()
+                except ValueError:
+                    print("Invalid format. Please try again.\n")
+    
+        if(not(gameContinue)) :
+            print("Congratulations! you have found the Target!")
+    
+        #TODO: Hide Target from the user landscape

@@ -5,7 +5,10 @@ import math
 import time
 import copy
 import basicAgentOne
+import basicAgentTwo
 from random import randint
+
+
 
 ##data - class to be held in each cell. 
 #isTarget = boolean which determines if the Target is there.
@@ -90,6 +93,19 @@ def print_real_landscape(field,dim): #prints out the landscape BY THE PROPER COO
             
         print()
     print()
+    
+def findTarget(landscape, dim):
+    for i in range(dim):
+        for j in range(dim):
+            if(landscape[i][j].isTarget == True):
+                if (landscape[i][j].probability == .1) : #flat terrain
+                    return '-'
+                elif (landscape[i][j].probability == .3) : #hilly terrain
+                    return '~'
+                elif (landscape[i][j].probability == .7) : #forested terrain
+                    return '^'
+                else:                                  #cave terrain
+                    return '}'
 
 ##search_position
 #returns true if the target has not been found and the game should continue;
@@ -115,7 +131,11 @@ if __name__ == '__main__' :
     if(whoPlays == 'y' or whoPlays == 'yes'):
         whoPlays = True
     elif(whoPlays == 'n' or whoPlays == 'no'):
-        print( basicAgentOne.basicAgentOne(landscape, dim))
+        one = basicAgentOne.basicAgentOne(landscape, dim)
+        two = basicAgentTwo.basicAgentTwo(landscape, dim)
+        print('Agent One:', one)
+        print('Agent Two:', two)
+        print('Target was in:', findTarget(landscape, dim))
         whoPlays = False
     else:
         print("I'm sorry, I don't think I understand. I'll just let the Agent play.", end="\n\n")

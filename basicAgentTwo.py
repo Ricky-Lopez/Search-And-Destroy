@@ -66,23 +66,24 @@ def search_position(environment, pos) :
 
 # Updates all the cells and the probability it contains a target
 def updateProbability(field, dim,  currentCell):
-    #Sets all the info needed
+  #Sets all the info needed
     totalCells = dim * dim
     probability = currentCell.probability
     probabilityOfFinding = currentCell.probabilityOfFinding
     position = currentCell.position
     X = position[0]
     Y = position[1]
-    newProbabilityOfFinding = probabilityOfFinding * probability #Takes the probability of Containing a target and multiplies it by the cells probability of finding the target 
-    currentCell.probabilityOfFinding = newProbabilityOfFinding # Sets the new probability to the cells probability of Containing
-    leftOver = probabilityOfFinding - newProbabilityOfFinding #Gets the probability left over when setting the new probability
-    addedProbability = leftOver / (totalCells - 1) # Gets the amount of probability to be added to all the other cells
+    #Bayes Theorem
+    newprobabilityOfFinding = ((probabilityOfFinding * probability) / ((1-probabilityOfFinding) + (probabilityOfFinding * probability)))
+    currentCell.probabilityOfFinding = newprobabilityOfFinding # Sets the new probability to the cells probability of Containing
+    #leftOver = probabilityContaning - newProbabilityContaning #Gets the probability left over when setting the new probability
+    #addedProbability = leftOver / (totalCells - 1) # Gets the amount of probability to be added to all the other cells
     
     #Updates all the other cells
     for i in range(dim):
         for j in range(dim):
             if(X != i or Y != j):
-                   field[i][j].probabilityOfFinding = field[i][j].probabilityOfFinding + addedProbability
+                   field[i][j].probabilityOfFinding = ((field[i][j].probabilityOfFinding * 1) / ((1-probabilityOfFinding) + (probabilityOfFinding * probability)))
     return  
        
 
@@ -95,6 +96,7 @@ def basicAgentTwo(environment, dim):
     Y = randint(0, dim-1)
     
     currentCell = field[X][Y]
+    #currentCell = field[0][0]
     currentCell.agent = True # Added a agent to the field
     print("added Agent")
     
@@ -105,7 +107,7 @@ def basicAgentTwo(environment, dim):
         
         time = time + 1
         
-        #printField(field, dim)
+        printField(field, dim)
         
         currentPropabilty = currentCell.probabilityOfFinding # Holds the probability of the current cell containing a target
         

@@ -69,19 +69,27 @@ def updateProbability(field, dim,  currentCell):
     position = currentCell.position
     X = position[0]
     Y = position[1]
-    newProbabilityContaning = probabilityContaning * probability #Takes the probability of Containing a target and multiplies it by the cells probability of finding the target 
+    #Bayes Theorem
+    newProbabilityContaning = ((probabilityContaning * probability) / ((1-probabilityContaning) + (probabilityContaning * probability)))
     currentCell.probabilityOfContaning = newProbabilityContaning # Sets the new probability to the cells probability of Containing
-    leftOver = probabilityContaning - newProbabilityContaning #Gets the probability left over when setting the new probability
-    addedProbability = leftOver / (totalCells - 1) # Gets the amount of probability to be added to all the other cells
+    #leftOver = probabilityContaning - newProbabilityContaning #Gets the probability left over when setting the new probability
+    #addedProbability = leftOver / (totalCells - 1) # Gets the amount of probability to be added to all the other cells
     
     #Updates all the other cells
     for i in range(dim):
         for j in range(dim):
             if(X != i or Y != j):
-                   field[i][j].probabilityOfContaning = field[i][j].probabilityOfContaning + addedProbability
+                   field[i][j].probabilityOfContaning = ((field[i][j].probabilityOfContaning * 1) / ((1-probabilityContaning) + (probabilityContaning * probability)))
     return  
-       
 
+def findHighestProbability(field, dim, currentPosition):
+    currentHighest = currentPosition
+    for i in range(dim):
+        for j in range(dim):
+            if(currentHighest.probabilityOfContaning < field[i][j].probabilityOfContaning):
+                currentHighest = field[i][j]
+    return currentHighest
+    
 def basicAgentOne(environment, dim):
 
     field = setField(environment,dim) # Establishes a field for the Agent
@@ -91,6 +99,7 @@ def basicAgentOne(environment, dim):
     Y = randint(0, dim-1)
     
     currentCell = field[X][Y]
+    #currentCell = field[0][0]
     currentCell.agent = True # Added a agent to the field
     print("added Agent")
     
@@ -101,7 +110,7 @@ def basicAgentOne(environment, dim):
         
         time = time + 1
         
-        #printField(field, dim)
+        printField(field, dim)
         
         currentPropabilty = currentCell.probabilityOfContaning # Holds the probability of the current cell containing a target
         

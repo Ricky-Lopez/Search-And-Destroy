@@ -6,6 +6,7 @@ import time
 import copy
 import basicAgentOne
 import basicAgentTwo
+import improvedAgent
 from random import randint
 
 
@@ -131,11 +132,52 @@ if __name__ == '__main__' :
     if(whoPlays == 'y' or whoPlays == 'yes'):
         whoPlays = True
     elif(whoPlays == 'n' or whoPlays == 'no'):
-        one = basicAgentOne.basicAgentOne(landscape, dim)
-        two = basicAgentTwo.basicAgentTwo(landscape, dim)
+        
+        
+        #Data collection code
+        """
+        reps = 50
+        one = 0
+        two = 0
+        improved = 0
+        
+        print('Collecting Data')
+        
+        for i in range(reps):
+            
+            landscape = create_landscape(dim)
+            
+            X = randint(0, dim-1)
+            Y = randint(0, dim-1)
+            startingPosition = [X,Y]
+            one = one + basicAgentOne.basicAgentOne(landscape, dim, startingPosition)
+            two = two + basicAgentTwo.basicAgentTwo(landscape, dim, startingPosition)
+            improved = improved + improvedAgent.improvedAgent(landscape, dim, startingPosition)
+            print('Rep:', i)
+        
+        print('Agent One Average:', one / reps)    
+        print('Agent Two Average:', two / reps) 
+        print('Agent Improved Average:', improved / reps) 
+        
+        """
+        
+        
+        X = randint(0, dim-1)
+        Y = randint(0, dim-1)
+        startingPosition = [X,Y]
+        one = basicAgentOne.basicAgentOne(landscape, dim, startingPosition)
+        two = basicAgentTwo.basicAgentTwo(landscape, dim, startingPosition)
+        improved = improvedAgent.improvedAgent(landscape, dim, startingPosition)
         print('Agent One:', one)
         print('Agent Two:', two)
+        print('Improved Agent:', improved)
         print('Target was in:', findTarget(landscape, dim))
+        
+        
+        
+        
+        
+        
         whoPlays = False
     else:
         print("I'm sorry, I don't think I understand. I'll just let the Agent play.", end="\n\n")

@@ -87,13 +87,73 @@ def updateProbability(field, dim,  currentCell):
     return  
        
 
-def basicAgentTwo(environment, dim):
+def findHighestProbability(field, dim, currentPosition):
+    currentHighest = currentPosition
+    for i in range(dim):
+        for j in range(dim):
+            if(currentHighest.probabilityOfFinding < field[i][j].probabilityOfFinding):
+                currentHighest = field[i][j]
+    return currentHighest.probabilityOfFinding
+
+class BFS_state:# hold the current state and the previous state
+    def __init__(self, state, prev):
+        self.state = state #current state
+        self.prev = prev #previous states
+
+def BFS(field, start_location, highestProb, dim): # Uses BFS to determine the shortest path from one state to another
+    fringe = queue.Queue() #Fringe is a queue since its BFS (first come first out)
+    closed = [] # holds the closed states
+    shortest_path = [] # holds the current shortest path
+    inFringe = []# holds the states that currently in the fringe
+    start_state = BFS_state(start_location, 0)
+    fringe.put(start_state)
+    while(fringe.empty() == False): # loops while fringe isn't empty
+        current_state = fringe.get()  #Pops state from fringe and makes current
+        current = current_state.state
+        i = current[0]
+        j = current[1]
+        if(field[i][j].probabilityOfFinding == highestProb): #if the end location is found on the fringe
+            while(current != start_location):#Traces back through nodes to construct path
+                shortest_path.append(current)
+                current_state = current_state.prev # uses the BFS_state class to look for the previous state 
+                current = current_state.state
+            shortest_path.append(start_location)
+            shortest_path.reverse() # reverses the path to make it go in correct orde
+            return shortest_path
+        else:
+            i = current[0]
+            j = current[1]
+            if((i + 1) >= 0 and (i + 1) < dim ):   # Checks if the following state is in the maze range   
+                    if(closed.count([i+1,j]) == 0 and inFringe.count([i+1,j]) == 0 ): #checks if the following state isn't already closed or in the fringe
+                        new_state = BFS_state([i+1,j], current_state)# creates a new BFS_state and adds it the fringe
+                        fringe.put(new_state)
+                        inFringe.append([i+1,j])
+            if((i - 1) >=0 and (i - 1) < dim):# Checks if the following state is in the maze range 
+                    if(closed.count([i-1,j]) == 0 and inFringe.count([i-1,j]) == 0 ):#checks if the following state isn't already closed or in the fringe
+                        new_state = BFS_state([i-1,j], current_state) # creates a new BFS_state and adds it the fringe
+                        fringe.put(new_state)
+                        inFringe.append([i-1,j])
+            if((j + 1) >=0 and (j + 1) < dim):# Checks if the following state is in the maze range 
+                    if(closed.count([i,j+1]) == 0 and inFringe.count([i,j+1]) == 0  ):#checks if the following state isn't already closed or in the fringe
+                        new_state = BFS_state([i,j+1], current_state)# creates a new BFS_state and adds it the fringe
+                        fringe.put(new_state)
+                        inFringe.append([i,j+1]) 
+            if((j - 1) >= 0 and (j - 1) < dim):# Checks if the following state is in the maze range 
+                    if(closed.count([i,j-1]) == 0 and inFringe.count([i,j-1]) == 0):#checks if the following state isn't already closed or in the fringe
+                        new_state = BFS_state([i,j-1], current_state)# creates a new BFS_state and adds it the fringe
+                        fringe.put(new_state)
+                        inFringe.append([i,j-1])
+            closed.append(current)  #puts current state in closed after generating valid children
+   
+ 
+    
+def basicAgentTwo(environment, dim, startingPosition):
 
     field = setField(environment,dim) # Establishes a field for the Agent
     printField(field, dim)
     
-    X = randint(0, dim-1)
-    Y = randint(0, dim-1)
+    X = startingPosition[0]
+    Y = startingPosition[1]
     
     currentCell = field[X][Y]
     #currentCell = field[0][0]
@@ -105,73 +165,37 @@ def basicAgentTwo(environment, dim):
     
     while(1):
         
+        printField(field, dim) # Prints the field
+        
         time = time + 1
         
-        printField(field, dim)
+        highestProb = findHighestProbability(field, dim, currentCell) # Gets the highest probability of the field
         
-        currentPropabilty = currentCell.probabilityOfFinding # Holds the probability of the current cell containing a target
-        
-        X = currentCell.position[0]
-        Y = currentCell.position[1]
-        
-        changed = False # Determines if the agents changed cells
-        
-        #find surrounding cells
-        if((X+1) < dim): #check the cell below the current
-            if(field[X+1][Y].probabilityOfFinding > currentPropabilty):
-                #If the below cell has a higher probability, the agent moves
-                currentCell.agent = False
-                currentCell = field[X+1][Y]
-                currentPropabilty = currentCell.probabilityOfFinding
-                currentCell.agent = True
-                changed = True
-        if((X-1) >= 0): #check the cell above the current
-            if(field[X-1][Y].probabilityOfFinding > currentPropabilty):
-                #If the above cell has a higher probability, the agent moves
-                currentCell.agent = False
-                currentCell = field[X-1][Y]
-                currentPropabilty = currentCell.probabilityOfFinding
-                currentCell.agent = True
-                changed = True
-        if((Y+1) < dim):#check the cell right of the current
-            if(field[X][Y+1].probabilityOfFinding > currentPropabilty):
-                #If the right cell has a higher probability, the agent moves
-                currentCell.agent = False
-                currentCell = field[X][Y+1]
-                currentPropabilty = currentCell.probabilityOfFinding
-                currentCell.agent = True
-                changed = True 
-        if((Y-1) >= 0):#check the cell left of the current
-            if(field[X][Y-1].probabilityOfFinding > currentPropabilty):
-                #If the left cell has a higher probability, the agent moves
-                currentCell.agent = False
-                currentCell = field[X][Y-1]
-                currentPropabilty = currentCell.probabilityOfFinding
-                currentCell.agent = True
-                changed = True     
-            
-        if(changed == False): # if the agent never changed cells, the agent will search its current cell
+        if(currentCell.probabilityOfFinding == highestProb):
             
             found = search_position(environment, currentCell.position) # Agent searches current cell
         
-            if(found == True): # If target was found, return agound of time
+            if(found == True): # If target was found, return time
                 return time
             else:
                 #Else, the probability of the cells in the field are updated
                 print("Agent searched cell:", currentCell.position)
-                updateProbability(field, dim,  currentCell)
+                updateProbability(field, dim,  currentCell) 
         else:
-            print("Agent Moved to cell:" , currentCell.position)
             
+            path = BFS(field, currentCell.position, highestProb, dim) # Calculates the path to the highest probability
+            
+            nextStep = path[1] # Gets the next step the agents takes to thr highest probability
+            
+            X = nextStep[0]
+            Y = nextStep[1]
+            
+            #Moves the Agent to the next Step
+            print("Agent moved to cell:", nextStep)
+            currentCell.agent = False
+            currentCell = field[X][Y]
+            currentCell.agent = True
         
-    
-    
-    
-    
-    
-   
-    
-    
     
    
     

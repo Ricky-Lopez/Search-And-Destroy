@@ -49,16 +49,40 @@ def printField(field, dim):
         print()
     print()
 
-# Searches the cell using the environment. Returns True is target is found. Returns False is Target isn't found    
-def search_position(environment, pos) :
+#Determines where the Target is, and figures out Manhattan Distance of the agent and Target.
+def manhattan_distance(environment, pos, dim):
+    for i in range(dim):
+        for j in range(dim):
+            if (environment[i][j].isTarget): #Target has been located
+                            targetPos = [i, j]
+
+    xDiff = math.sqrt((targetPos[0] - pos[0]) ** 2)
+    yDiff = math.sqrt((targetPos[1] - pos[1]) ** 2)
+
+    if((xDiff + yDiff) < 5) :
+        return True
+    
+    return False
+
+
+# Searches the cell using the environment. Returns 1 if target is found. Returns 0 is Target isn't found. Returns 2 if Target isn't found, but is within a manhattan distance of 5.  
+def search_position(environment1, pos) :
+    
+    
     rand = randint(1, 100) # Gets random # between 1 and 100
-    searchCell = environment[pos[0]][pos[1]] # Grabs the cell position from the environment 
+    searchCell = environment1[pos[0]][pos[1]] # Grabs the cell position from the environment 
     target = searchCell.isTarget # Checks to see if the searched cell contains the target
     prob = searchCell.probability * 100 
-    if(rand > prob): 
-        return target
-    else: #P(Taget not found in Cell | Target is in Cell)
-        return False
+
+    if(target):
+        if(rand > prob): 
+            return 1 #Returns 1 if the target has been found!
+    environment.move_target(environment1, len(environment1))
+    isClose = manhattan_distance(environment1, pos, len(environment1))
+    if(isClose):
+        return 2 #Not found but within a Manhattan-Distance of 5
+    return 0
+
 
 # Updates all the cells and the probability it contains a target
 def updateProbability(field, dim,  currentCell):
@@ -157,14 +181,18 @@ def improvedAgent(environment, dim, startingPosition):
             
             found = search_position(environment, currentCell.position) # Agent searches current cell
         
-            if(found == True): # If target was found, return agound of time
+            if(found == 1): # If target was found, return agound of time
+                print("Target has been found!")
                 return time
-            else:
+            elif(found == 0): #Target was not found, and is not within a Manhattan distance of 5 from the Agent
                 #Else, the probability of the cells in the field are updated
                 print("Agent searched cell:", currentCell.position)
                 updateProbability(field, dim,  currentCell)
-        else:
-            print("Agent Moved to cell:" , currentCell.position)
+            elif(found == 2): #Target was not found, but is within a Manhattan distance of 5 from the Agent.
+                print("Target is within 5 unit spaces of the agent.")
+                #TODO: Write new probability function for this situation!
+            else:
+                print("Agent Moved to cell:" , currentCell.position)
             
         
     

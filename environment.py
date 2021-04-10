@@ -7,6 +7,7 @@ import copy
 import basicAgentOne
 import basicAgentTwo
 import improvedAgent
+import movingTargetAgent
 from random import randint
 
 
@@ -47,7 +48,32 @@ def create_landscape(dim): #creates a landscape given dim dimension.
 
     return landscape
 
+## move_target
+#after a search, the target will move from one position to another position adjacent to its original location.
 
+def move_target(field, dim) :
+    for i in range(dim):
+        for j in range(dim):
+            if (field[i][j].isTarget): #Target has been located
+                field[i][j].isTarget = False
+                while(1):
+                    rand = randint(0, 100)
+                    if(rand < 25):
+                        if(j+1 < dim):
+                            field[i][j+1].isTarget = True
+                            return True
+                    elif(rand < 50):
+                        if(j-1 > -1) : 
+                            field[i][j-1].isTarget = True
+                            return True
+                    elif(rand < 75):
+                        if(i+1 < dim):
+                            field[i+1][j].isTarget = True
+                            return True
+                    else:
+                        if(i-1 > -1):
+                            field[i-1][j].isTarget = True
+                            return True
 
 ## print_landscape
 #prints the real_landscape, with terrains and target. 
@@ -94,7 +120,17 @@ def print_real_landscape(field,dim): #prints out the landscape BY THE PROPER COO
             
         print()
     print()
-    
+
+def findTargetPos(landscape, dim):
+    for i in range(dim):
+        for j in range(dim):
+            if(landscape[i][j].isTarget == True):
+                pos= []
+                pos.append(i)
+                pos.append(j)
+                return pos   
+
+
 def findTarget(landscape, dim):
     for i in range(dim):
         for j in range(dim):
@@ -135,8 +171,8 @@ if __name__ == '__main__' :
         
         
         #Data collection code
-        """
-        reps = 50
+        #"""
+        reps = 10
         one = 0
         two = 0
         improved = 0
@@ -159,19 +195,24 @@ if __name__ == '__main__' :
         print('Agent Two Average:', two / reps) 
         print('Agent Improved Average:', improved / reps) 
         
+        #"""
+        
         """
-        
-        
         X = randint(0, dim-1)
         Y = randint(0, dim-1)
         startingPosition = [X,Y]
         one = basicAgentOne.basicAgentOne(landscape, dim, startingPosition)
         two = basicAgentTwo.basicAgentTwo(landscape, dim, startingPosition)
         improved = improvedAgent.improvedAgent(landscape, dim, startingPosition)
+        
+        #landscapeCopy = copy.deepcopy(landscape)
+        #movingImproved = movingTargetAgent.improvedAgent(landscapeCopy, dim, startingPosition)
         print('Agent One:', one)
         print('Agent Two:', two)
         print('Improved Agent:', improved)
-        print('Target was in:', findTarget(landscape, dim))
+        #print("Moving Improved Agent:", movingImproved)
+        print('Target was in:', findTargetPos(landscape, dim), ", " , findTarget(landscape, dim))
+        """
         
         
         

@@ -160,7 +160,7 @@ def basicAgentOne(environment, dim, startingPosition):
     
     while(1):
         
-        printField(field, dim) # Prints the field
+        #printField(field, dim) # Prints the field
         
         time = time + 1
         

@@ -6,7 +6,6 @@ import time
 import copy
 import basicAgentOne
 import basicAgentTwo
-import improvedAgent
 import movingTargetAgent
 from random import randint
 
@@ -162,7 +161,7 @@ if __name__ == '__main__' :
     dim = int(input("Please enter the size of the landscape: "))
     landscape = create_landscape(dim)
     print_real_landscape(landscape, dim)
-    whoPlays = input("Would you like to try and locate the target? y/n\n")
+    whoPlays = input("Would YOU like to try and locate the target? y/n\n")
     whoPlays.lower()
 
     if(whoPlays == 'y' or whoPlays == 'yes'):
@@ -171,11 +170,12 @@ if __name__ == '__main__' :
         
         
         #Data collection code
-        #"""
-        reps = 10
+        """
+        reps = int(input("How many times would you like to run the agents? Please type an integer: "))
         one = 0
         two = 0
         improved = 0
+        movingImproved = 0
         
         print('Collecting Data')
         
@@ -188,31 +188,29 @@ if __name__ == '__main__' :
             startingPosition = [X,Y]
             one = one + basicAgentOne.basicAgentOne(landscape, dim, startingPosition)
             two = two + basicAgentTwo.basicAgentTwo(landscape, dim, startingPosition)
-            improved = improved + improvedAgent.improvedAgent(landscape, dim, startingPosition)
-            print('Rep:', i)
+            #improved = improved + improvedAgent.improvedAgent(landscape, dim, startingPosition)
+            movingImproved = movingImproved + movingTargetAgent.improvedAgent(landscape, dim, startingPosition)
+            print('Rep:', i+1)
         
         print('Agent One Average:', one / reps)    
         print('Agent Two Average:', two / reps) 
-        print('Agent Improved Average:', improved / reps) 
-        
-        #"""
+        #print('Agent Improved Average:', improved / reps)
+        print('Moving Agent Improved Average:', movingImproved / reps ) 
         
         """
+        
+        #"""
         X = randint(0, dim-1)
         Y = randint(0, dim-1)
         startingPosition = [X,Y]
         one = basicAgentOne.basicAgentOne(landscape, dim, startingPosition)
         two = basicAgentTwo.basicAgentTwo(landscape, dim, startingPosition)
-        improved = improvedAgent.improvedAgent(landscape, dim, startingPosition)
-        
-        #landscapeCopy = copy.deepcopy(landscape)
-        #movingImproved = movingTargetAgent.improvedAgent(landscapeCopy, dim, startingPosition)
-        print('Agent One:', one)
+        movingImproved = movingTargetAgent.improvedAgent(landscape, dim, startingPosition)
+        print('\n\nAgent One:', one)
         print('Agent Two:', two)
-        print('Improved Agent:', improved)
-        #print("Moving Improved Agent:", movingImproved)
+        print("Moving Improved Agent:", movingImproved)
         print('Target was in:', findTargetPos(landscape, dim), ", " , findTarget(landscape, dim))
-        """
+        #"""
         
         
         
@@ -221,8 +219,8 @@ if __name__ == '__main__' :
         
         whoPlays = False
     else:
-        print("I'm sorry, I don't think I understand. I'll just let the Agent play.", end="\n\n")
-        whoPlays = False
+        print("I'm sorry, I don't think I understand. I'll just let the User play.", end="\n\n")
+        whoPlays = True
 
     if(whoPlays) : #User gets to play
         print("\n******** SEARCH AND DESTROY *********\nRULES:\n\n1. Enter the position you would like to query in the format \"x,y\".\n2. To quit, enter \"q\".\n3. Have fun playing!\n\n")
@@ -249,4 +247,4 @@ if __name__ == '__main__' :
         if(not(gameContinue)) :
             print("Congratulations! you have found the Target!")
     
-        #TODO: Hide Target from the user landscape
+    print("\n***MOVING TARGET VERSION***")

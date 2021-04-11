@@ -49,15 +49,11 @@ def printField(field, dim):
         print()
     print()
 
-#Determines where the Target is, and figures out Manhattan Distance of the agent and Target.
-def manhattan_distance(environment, pos, dim):
-    for i in range(dim):
-        for j in range(dim):
-            if (environment[i][j].isTarget): #Target has been located
-                            targetPos = [i, j]
+#Determines where the Target is, and figures out Manhattan Distance of the position 1  and position 2.
+def manhattan_distance(environment, pos, dim, pos2):
 
-    xDiff = math.sqrt((targetPos[0] - pos[0]) ** 2)
-    yDiff = math.sqrt((targetPos[1] - pos[1]) ** 2)
+    xDiff = math.sqrt((pos2[0] - pos[0]) ** 2)
+    yDiff = math.sqrt((pos2[1] - pos[1]) ** 2)
 
     if((xDiff + yDiff) < 5) :
         return True
@@ -78,7 +74,8 @@ def search_position(environment1, pos) :
         if(rand > prob): 
             return 1 #Returns 1 if the target has been found!
     environment.move_target(environment1, len(environment1))
-    isClose = manhattan_distance(environment1, pos, len(environment1))
+    targetPos = environment.findTargetPos(environment1, len(environment1))
+    isClose = manhattan_distance(environment1, pos, len(environment1), targetPos)
     if(isClose):
         return 2 #Not found but within a Manhattan-Distance of 5
     return 0
@@ -105,6 +102,25 @@ def updateProbability(field, dim,  currentCell):
             if(X != i or Y != j):
                    field[i][j].probabilityOfContaning = ((field[i][j].probabilityOfContaning * 1) / ((1-probabilityContaning) + (probabilityContaning * probability)))
     return  
+
+def updateProbability_manhattan(field, dim, currentCell):
+
+    cumulativeProbability = 0
+
+    for i in range(dim):
+        for j in range(dim):
+            currPos = field[i][j].position
+            if(not(manhattan_distance(field, currentCell, dim, currPos))):
+                cumulativeProbability = cumulativeProbability + field[i][j].probabilityOfContaning
+                field[i][j].probabilityOfContaning = 0
+
+    for k in range(dim):
+        for l in range(dim):
+            currPos = field[k][l].position
+            if(manhattan_distance(field, currentCell, dim, currPos)):
+                field[i][j].probabilityOfContaning = ((field[i][j].probabilityOfContaning * 1) / (1- cumulativeProbability))
+            
+
 
 def findHighestProbability(field, dim, currentPosition):
     currentHighest = currentPosition
@@ -189,8 +205,13 @@ def improvedAgent(environment, dim, startingPosition):
                 print("Agent searched cell:", currentCell.position)
                 updateProbability(field, dim,  currentCell)
             elif(found == 2): #Target was not found, but is within a Manhattan distance of 5 from the Agent.
+                print("Agent searched cell:", currentCell.position)
                 print("Target is within 5 unit spaces of the agent.")
-                #TODO: Write new probability function for this situation!
+                
+                updateProbability(field, dim, currentCell)
+                fieldSave = copy.deepcopy(field)
+                updateProbability_manhattan(field, dim, currentCell.position)
+
             else:
                 print("Agent Moved to cell:" , currentCell.position)
             
